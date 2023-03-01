@@ -62,9 +62,9 @@ while playing:
     pg.display.update()
     screen.fill((50, 50, 50))
 
-    for index, celestialObject1 in enumerate(celestialObjects):
+    for index1, celestialObject1 in enumerate(celestialObjects):
         for index2, celestialObject2 in enumerate(celestialObjects):
-            if index == index2:
+            if index1 == index2:
                 continue
             dist = distance(celestialObject1.position, celestialObject2.position)*distanceFactor
             
@@ -88,9 +88,9 @@ while playing:
 
             # Vectors
             # Accel:
-            #pg.draw.line(screen, (0, 255, 100), celestialObject1.position, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k], 2)
+            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k], 2)
             # Attraction force
-            #pg.draw.line(screen, (255, 0, 0), celestialObject1.position, [celestialObject1.position[0]+attractionForceVector1.components[0]*k*10, celestialObject1.position[1]+attractionForceVector1.components[1]*k*10])
+            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, [celestialObject1.position[0]+attractionForceVector1.components[0]*k*10, celestialObject1.position[1]+attractionForceVector1.components[1]*k*10])
             # difference Vector
             # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
 
