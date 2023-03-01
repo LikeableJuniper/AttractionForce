@@ -2,7 +2,7 @@ import math
 
 class Vector:
     def __init__(self, *args):
-        if len(args) == 1 and type(args[0]) == list: # If a list containing a list of coordinates is submitted, get the coordinates from that list.
+        if len(args) == 1 and isinstance(args[0], (list, tuple, Vector)): # If a list containing a list of coordinates is submitted, get the coordinates from that list.
             self.components = args[0]
         else:
             self.components = args
@@ -61,7 +61,7 @@ class Vector:
     def __getitem__(self, key):
         return self.components[key]
     
-    def direction(self):
+    def angle(self):
         if self[1] >= 0:
             return math.acos(self[0] / abs(self))
         else:
@@ -69,7 +69,7 @@ class Vector:
     
     def rotatePygame(self, angle=0, rotateTo=0):
         if not rotateTo:
-            rotateTo = self.direction() + angle
+            rotateTo = self.angle() + angle
         length = abs(self)
         self.components = [math.cos(rotateTo) * length, -1 * math.sin(rotateTo) * length]
         return self
@@ -77,7 +77,7 @@ class Vector:
     def rotate(self, angle=0, rotateTo=0):
         """Only supports 2D!"""
         if not rotateTo:
-            rotateTo = self.direction() + angle
+            rotateTo = self.angle() + angle
         length = abs(self)
         self.components = [math.cos(rotateTo) * length, math.sin(rotateTo) * length]
         return self
