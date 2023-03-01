@@ -8,6 +8,8 @@ mainFont = pg.font.SysFont("Calibri", 20)
 screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 width, height = pg.display.get_surface().get_size()
 screencenter = [width/2, height/2]
+offset = Vector(0, 0)
+scrollSpeed = 100
 
 SIMULATIONSPEED = 0.1
 k = 10
@@ -17,7 +19,7 @@ universalGrav = 1.7 # 6.67 * 10**(-11)
 
 
 class CelestialObject:
-    def __init__(self, position : list, mass : float, startAccel : Vector, color : list = (0, 0, 0), radius : float = None, isSun : bool = False):
+    def __init__(self, position : Vector, mass : float, startAccel : Vector, color : list = (0, 0, 0), radius : float = None, isSun : bool = False):
         self.position = position
         self.mass = mass
         self.color = color
@@ -48,10 +50,10 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
     return Vector(f_g, 0).rotate(angle)
 
 
-celestialObjects : list[CelestialObject] = [CelestialObject([screencenter[0]+300, screencenter[1]], 6, Vector(0, -20), (255, 0, 255))]
+celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -20), (255, 0, 255))]
 #celestialObjects.append(CelestialObject([screencenter[0]-400, screencenter[1]], 10, Vector(0, 50), (0, 255, 100)))
 sunIndex = 0
-celestialObjects.insert(sunIndex, CelestialObject(screencenter, 20, Vector(0, 0), (255, 255, 255), isSun=True))
+celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 0), (255, 255, 255), isSun=True))
 
 playing = True
 objectsCrashed = False
@@ -59,8 +61,6 @@ objectsCrashed = False
 while playing:
     pg.display.update()
     screen.fill((50, 50, 50))
-    
-    pg.draw.circle(screen, celestialObjects[sunIndex].color, celestialObjects[sunIndex].position, celestialObjects[sunIndex].radius)
 
     for index, celestialObject1 in enumerate(celestialObjects):
         for index2, celestialObject2 in enumerate(celestialObjects):
@@ -84,7 +84,7 @@ while playing:
             celestialObject2.position = (Vector(celestialObject2.position) + (celestialObject2.accel/celestialObject2.mass)*SIMULATIONSPEED).components
             diffVector = Vector(celestialObject2.position[0]-celestialObject1.position[0], celestialObject2.position[1]-celestialObject1.position[1])
 
-            pg.draw.circle(screen, celestialObject1.color, celestialObject1.position, celestialObject1.radius)
+            pg.draw.circle(screen, celestialObject1.color, celestialObject1.position+offset, celestialObject1.radius)
 
             # Vectors
             # Accel:
@@ -134,3 +134,12 @@ while playing:
         if event.type == pg.QUIT:
             pg.quit()
             playing = False
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_UP:
+                offset[1] += scrollSpeed
+            if event.key == pg.K_DOWN:
+                offset[1] -= scrollSpeed
+            if event.key == pg.K_LEFT:
+                offset[0] += scrollSpeed
+            if event.key == pg.K_RIGHT:
+                offset[0] -= scrollSpeed
