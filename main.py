@@ -53,7 +53,7 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
 
 
 celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -75), (255, 0, 255))]
-#celestialObjects.append(CelestialObject([screencenter[0]-400, screencenter[1]], 10, Vector(0, 50), (0, 255, 100)))
+celestialObjects.append(CelestialObject(Vector(screencenter[0]-400, screencenter[1]), 10, Vector(0, 50), (0, 255, 100)))
 sunIndex = 0
 celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 15), (255, 255, 255), isSun=True))
 
@@ -79,16 +79,17 @@ while playing:
             celestialObject1.accel += attractionForceVector*SIMULATIONSPEED
             
             # Update positions by adding acceleration
-            celestialObject1.position = (Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED).components
-            diffVector = Vector(celestialObject2.position[0]-celestialObject1.position[0], celestialObject2.position[1]-celestialObject1.position[1])
+            celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED
+            diffVector = celestialObject2.position - celestialObject1.position
 
-            pg.draw.circle(screen, celestialObject1.color, celestialObject1.position+offset, celestialObject1.radius)
+            pos1 = list((celestialObject1.position+offset)*zoom)
+            pg.draw.circle(screen, celestialObject1.color, pos1, celestialObject1.radius*zoom)
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, celestialObject1.position+celestialObject1.accel*k + offset)
+            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k + offset)*zoom))
             # Attraction force
-            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, celestialObject1.position + attractionForceVector*k*10+offset)
+            pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10+offset)*zoom))
             # difference Vector
             # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
 
