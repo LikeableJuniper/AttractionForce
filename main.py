@@ -101,36 +101,6 @@ while playing:
             # attraction force angle
             # screen.blit(mainFont.render(str(math.degrees(attractionForceVector.angle())), False, (255, 0, 0)), [celestialObject.position[0]+30, celestialObject.position[1]+60])
     
-    """celestialObjects.reverse()
-    for celestialObject1 in celestialObjects:
-        index = celestialObjects.index(celestialObject1)
-        for celestialObject2 in celestialObjects[index+1:]:
-            dist = distance(celestialObject1.position, celestialObject2.position)/100
-
-            attractionForceVector = getAttractionVector(getAttractionForce(universalGrav, celestialObject1.mass, celestialObject2.mass, dist), celestialObject1.position, celestialObject2.position)/celestialObject1.mass
-            celestialObject1.accel = celestialObject1.accel + attractionForceVector*SIMULATIONSPEED
-            # celestialObject.position = pg.mouse.get_pos()
-            celestialObject1.position = (Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED).components
-            diffVector = Vector(celestialObject2.position[0]-celestialObject1.position[0], celestialObject2.position[1]-celestialObject1.position[1])
-
-            pg.draw.circle(screen, celestialObject1.color, celestialObject1.position, celestialObject1.radius)
-
-            # Vectors
-            # Accel:
-            pg.draw.line(screen, (0, 255, 100), celestialObject1.position, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k], 2)
-            # Attraction force
-            pg.draw.line(screen, (255, 0, 0), celestialObject1.position, [celestialObject1.position[0]+attractionForceVector.components[0]*k*10, celestialObject1.position[1]+attractionForceVector.components[1]*k*10])
-            # difference Vector
-            # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
-
-            # Angles
-            # difference Vector angle
-            # screen.blit(mainFont.render(str(math.degrees(diffVector.angle())), False, (0, 0, 255)), [celestialObject.position[0]+30, celestialObject.position[1]+30])
-            # attraction force angle
-            # screen.blit(mainFont.render(str(math.degrees(attractionForceVector.angle())), False, (255, 0, 0)), [celestialObject.position[0]+30, celestialObject.position[1]+60])
-    
-    celestialObjects.reverse()"""
-    
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
