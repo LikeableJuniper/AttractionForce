@@ -53,7 +53,8 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
 
 
 celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -75), (255, 0, 255))]
-celestialObjects.append(CelestialObject(Vector(screencenter[0]-400, screencenter[1]), 10, Vector(0, 50), (0, 255, 100)))
+celestialObjects.append(CelestialObject(Vector(screencenter[0]-400, screencenter[1]), 4, Vector(0, 50), (0, 255, 100)))
+celestialObjects.append(CelestialObject(Vector(0, 0), 6, Vector(10, 30), (0, 100, 255)))
 sunIndex = 0
 celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 15), (255, 255, 255), isSun=True))
 
@@ -82,7 +83,7 @@ while playing:
             celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED
             diffVector = celestialObject2.position - celestialObject1.position
 
-            pos1 = list((celestialObject1.position+offset)*zoom)
+            pos1 = list(celestialObject1.position*zoom+offset)
             pg.draw.circle(screen, celestialObject1.color, pos1, celestialObject1.radius*zoom)
 
             # Vectors
