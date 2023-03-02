@@ -10,6 +10,8 @@ width, height = pg.display.get_surface().get_size()
 screencenter = [width/2, height/2]
 offset = Vector(0, 0)
 scrollSpeed = 100
+zoom = 1
+zoomSpeed = 1.125
 
 SIMULATIONSPEED = 0.1
 k = 10
@@ -61,8 +63,7 @@ objectsCrashed = False
 while playing:
     pg.display.update()
     screen.fill((50, 50, 50))
-
-    print("New Frame")
+    
     for index1, celestialObject1 in enumerate(celestialObjects):
         for index2, celestialObject2 in enumerate(celestialObjects):
             if index1 == index2:
@@ -70,28 +71,24 @@ while playing:
             dist = distance(celestialObject1.position, celestialObject2.position)*distanceFactor
             
             # Calculate attraction force vector for two celestial objects
-            attractionForceVector1 = getAttractionVector(getAttractionForce(universalGrav, celestialObject1.mass, celestialObject2.mass, dist), celestialObject1.position, celestialObject2.position)
-            # Rotate by 180° (math.pi in radians) to get vector in other direction and divide by mass 2
-            attractionForceVector2 = attractionForceVector1.rotate(math.pi)/celestialObject2.mass
-            # Finally divide by mass 1
-            attractionForceVector1 /= celestialObject1.mass
+            attractionForceVector = getAttractionVector(getAttractionForce(universalGrav, celestialObject1.mass, celestialObject2.mass, dist), celestialObject1.position, celestialObject2.position)
+            # Divide by mass
+            attractionForceVector /= celestialObject1.mass
 
             # Vector addition and scaling by SIMULATIONSPEED for variable simulation speeds
-            celestialObject1.accel += attractionForceVector1*SIMULATIONSPEED
-            celestialObject2.accel += attractionForceVector2*SIMULATIONSPEED
+            celestialObject1.accel += attractionForceVector*SIMULATIONSPEED
             
             # Update positions by adding acceleration
             celestialObject1.position = (Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED).components
-            celestialObject2.position = (Vector(celestialObject2.position) + (celestialObject2.accel/celestialObject2.mass)*SIMULATIONSPEED).components
             diffVector = Vector(celestialObject2.position[0]-celestialObject1.position[0], celestialObject2.position[1]-celestialObject1.position[1])
 
             pg.draw.circle(screen, celestialObject1.color, celestialObject1.position+offset, celestialObject1.radius)
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k]+offset, 2)
+            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, celestialObject1.position+celestialObject1.accel*k + offset)
             # Attraction force
-            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, [celestialObject1.position[0]+attractionForceVector1.components[0]*k*10, celestialObject1.position[1]+attractionForceVector1.components[1]*k*10]+offset)
+            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, celestialObject1.position + attractionForceVector*k*10+offset)
             # difference Vector
             # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
 
@@ -114,3 +111,12 @@ while playing:
                 offset[0] += scrollSpeed
             if event.key == pg.K_RIGHT:
                 offset[0] -= scrollSpeed
+        
+        if event.type == pg.MOUSEWHEEL:
+            mousePos = Vector(pg.mouse.get_pos())
+            if event.y < 0:
+                zoom /= zoomSpeed
+                offset = mousePos + ((offset-mousePos) / zoomSpeed)
+            elif event.y > 0:
+                zoom *= zoomSpeed
+                offset = mousePos + ((offset-mousePos) * zoomSpeed)
