@@ -79,8 +79,7 @@ class Vector:
         if not rotateTo:
             rotateTo = self.angle() + angle
         length = abs(self)
-        self.components = [math.cos(rotateTo) * length, math.sin(rotateTo) * length]
-        return self
+        return Vector([math.cos(rotateTo) * length, math.sin(rotateTo) * length])
 
 
 def dotProduct(v1 : Vector, v2 : Vector):

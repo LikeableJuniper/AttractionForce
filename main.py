@@ -19,7 +19,7 @@ universalGrav = 1.7 # 6.67 * 10**(-11)
 
 
 class CelestialObject:
-    def __init__(self, position : Vector, mass : float, startAccel : Vector, color : list = (0, 0, 0), radius : float = None, isSun : bool = False):
+    def __init__(self, position : Vector, mass : float, startAccel : Vector, color : list = (0, 0, 0), radius : float = 0.0, isSun : bool = False):
         self.position = position
         self.mass = mass
         self.color = color
@@ -27,7 +27,7 @@ class CelestialObject:
             self.radius = radius
         else:
             self.radius = [50, 100][int(isSun)]/3 * math.sqrt(self.mass)
-        self.accel = startAccel
+        self.accel: Vector = startAccel
         self.isSun = isSun
 
 
@@ -50,10 +50,10 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
     return Vector(f_g, 0).rotate(angle)
 
 
-celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -20), (255, 0, 255))]
+celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -75), (255, 0, 255))]
 #celestialObjects.append(CelestialObject([screencenter[0]-400, screencenter[1]], 10, Vector(0, 50), (0, 255, 100)))
 sunIndex = 0
-celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 0), (255, 255, 255), isSun=True))
+celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 15), (255, 255, 255), isSun=True))
 
 playing = True
 objectsCrashed = False
@@ -62,6 +62,7 @@ while playing:
     pg.display.update()
     screen.fill((50, 50, 50))
 
+    print("New Frame")
     for index1, celestialObject1 in enumerate(celestialObjects):
         for index2, celestialObject2 in enumerate(celestialObjects):
             if index1 == index2:
@@ -88,9 +89,9 @@ while playing:
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k], 2)
+            pg.draw.line(screen, (0, 255, 100), celestialObject1.position+offset, [celestialObject1.position[0]+celestialObject1.accel.components[0]*k, celestialObject1.position[1]+celestialObject1.accel.components[1]*k]+offset, 2)
             # Attraction force
-            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, [celestialObject1.position[0]+attractionForceVector1.components[0]*k*10, celestialObject1.position[1]+attractionForceVector1.components[1]*k*10])
+            pg.draw.line(screen, (255, 0, 0), celestialObject1.position+offset, [celestialObject1.position[0]+attractionForceVector1.components[0]*k*10, celestialObject1.position[1]+attractionForceVector1.components[1]*k*10]+offset)
             # difference Vector
             # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
 
