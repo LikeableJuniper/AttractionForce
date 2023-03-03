@@ -7,11 +7,13 @@ pg.font.init()
 mainFont = pg.font.SysFont("Calibri", 20)
 screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 width, height = pg.display.get_surface().get_size()
-screencenter = [width/2, height/2]
+screencenter = Vector([width/2, height/2])
 offset = Vector(0, 0)
 scrollSpeed = 100
 zoom = 1
 zoomSpeed = 1.125
+
+trackingIndex = 0
 
 SIMULATIONSPEED = 0.1
 k = 10
@@ -54,7 +56,6 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
 
 celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+300, screencenter[1]), 6, Vector(0, -75), (255, 0, 255))]
 celestialObjects.append(CelestialObject(Vector(screencenter[0]-400, screencenter[1]), 4, Vector(0, 50), (0, 255, 100)))
-celestialObjects.append(CelestialObject(Vector(0, 0), 6, Vector(10, 30), (0, 100, 255)))
 sunIndex = 0
 celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 20, Vector(0, 15), (255, 255, 255), isSun=True))
 
@@ -64,6 +65,9 @@ objectsCrashed = False
 while playing:
     pg.display.update()
     screen.fill((50, 50, 50))
+
+    if not isinstance(trackingIndex, type(None)):
+        offset = -1*(celestialObjects[trackingIndex].position)*zoom + screencenter
     
     for index1, celestialObject1 in enumerate(celestialObjects):
         for index2, celestialObject2 in enumerate(celestialObjects):
@@ -88,9 +92,9 @@ while playing:
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k + offset)*zoom))
+            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k)*zoom + offset))
             # Attraction force
-            pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10+offset)*zoom))
+            pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10)*zoom + offset))
             # difference Vector
             # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
 
@@ -113,6 +117,20 @@ while playing:
                 offset[0] += scrollSpeed
             if event.key == pg.K_RIGHT:
                 offset[0] -= scrollSpeed
+            
+            maxInd = len(celestialObjects)-1
+            if event.key == pg.K_0:
+                if 0 <= maxInd:
+                    trackingIndex = 0
+            if event.key == pg.K_1:
+                if 1 <= maxInd:
+                    trackingIndex = 1
+            if event.key == pg.K_2:
+                if 2 <= maxInd:
+                    trackingIndex = 2
+            if event.key == pg.K_3:
+                if 3 <= maxInd:
+                    trackingIndex = 3
         
         if event.type == pg.MOUSEWHEEL:
             mousePos = Vector(pg.mouse.get_pos())
