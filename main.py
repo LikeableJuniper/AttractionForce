@@ -54,12 +54,13 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
     return Vector(f_g, 0).rotate(angle)
 
 
-celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+2000, screencenter[1]), 6, Vector(0, -75), (255, 0, 255))]
-#celestialObjects.append(CelestialObject(Vector(screencenter[0]-400, screencenter[1]), 4, Vector(0, 50), (0, 255, 100)))
+celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+2000, screencenter[1]), 5, Vector(0, -50), (255, 0, 255))]
+#celestialObjects.append(CelestialObject(Vector(screencenter[0]-3000, screencenter[1]), 4, Vector(0, 50), (0, 255, 100)))
 sunIndex = 0
-celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 100, Vector(0, 15), (255, 255, 255), isSun=True))
+celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 100, Vector(0, 0), (255, 255, 255), isSun=True))
 
 playing = True
+paused = False
 objectsCrashed = False
 
 while playing:
@@ -134,6 +135,9 @@ while playing:
             if event.key == pg.K_3:
                 if 3 <= maxInd:
                     trackingIndex = 3
+            
+            if event.key == pg.K_SPACE:
+                paused = paused == False
         
         if event.type == pg.MOUSEWHEEL:
             mousePos = Vector(pg.mouse.get_pos())
