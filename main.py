@@ -70,41 +70,50 @@ while playing:
     if not isinstance(trackingIndex, type(None)):
         offset = -1*(celestialObjects[trackingIndex].position)*zoom + screencenter
     
-    for index1, celestialObject1 in enumerate(celestialObjects):
-        for index2, celestialObject2 in enumerate(celestialObjects):
-            if index1 == index2:
-                continue
-            dist = distance(celestialObject1.position, celestialObject2.position)*distanceFactor
-            
-            # Calculate attraction force vector for two celestial objects
-            attractionForceVector = getAttractionVector(getAttractionForce(universalGrav, celestialObject1.mass, celestialObject2.mass, dist), celestialObject1.position, celestialObject2.position)
-            # Divide by mass
-            attractionForceVector /= celestialObject1.mass
+    if not paused:
+        for index1, celestialObject1 in enumerate(celestialObjects):
+            for index2, celestialObject2 in enumerate(celestialObjects):
+                if index1 == index2:
+                    continue
+                dist = distance(celestialObject1.position, celestialObject2.position)*distanceFactor
+                
+                # Calculate attraction force vector for two celestial objects
+                attractionForceVector = getAttractionVector(getAttractionForce(universalGrav, celestialObject1.mass, celestialObject2.mass, dist), celestialObject1.position, celestialObject2.position)
+                # Divide by mass
+                attractionForceVector /= celestialObject1.mass
 
-            # Vector addition and scaling by SIMULATIONSPEED for variable simulation speeds
-            celestialObject1.accel += attractionForceVector*SIMULATIONSPEED
-            
-            # Update positions by adding acceleration
-            celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED
-            diffVector = celestialObject2.position - celestialObject1.position
+                # Vector addition and scaling by SIMULATIONSPEED for variable simulation speeds
+                celestialObject1.accel += attractionForceVector*SIMULATIONSPEED
+                
+                # Update positions by adding acceleration
+                celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED
+                diffVector = celestialObject2.position - celestialObject1.position
 
-            pos1 = list(celestialObject1.position*zoom+offset)
-            pg.draw.circle(screen, celestialObject1.color, pos1, celestialObject1.radius*zoom)
+                pos1 = list(celestialObject1.position*zoom+offset)
+                pg.draw.circle(screen, celestialObject1.color, pos1, celestialObject1.radius*zoom)
+
+                # Vectors
+                # Accel:
+                pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k)*zoom + offset))
+                # Attraction force
+                pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10)*zoom + offset))
+                # difference Vector
+                # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
+
+                # Angles
+                # difference Vector angle
+                # screen.blit(mainFont.render(str(math.degrees(diffVector.angle())), False, (0, 0, 255)), [celestialObject.position[0]+30, celestialObject.position[1]+30])
+                # attraction force angle
+                # screen.blit(mainFont.render(str(math.degrees(attractionForceVector.angle())), False, (255, 0, 0)), [celestialObject.position[0]+30, celestialObject.position[1]+60])
+    else:
+        for celestialObject in celestialObjects:
+            pos1 = list(celestialObject.position*zoom+offset)
+            pg.draw.circle(screen, celestialObject.color, pos1, celestialObject.radius*zoom)
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k)*zoom + offset))
-            # Attraction force
-            pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10)*zoom + offset))
-            # difference Vector
-            # pg.draw.line(screen, (0, 0, 255), celestialObject1.position, [celestialObject1.position[0]+diffVector.components[0], celestialObject1.position[1]+diffVector.components[1]])
+            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject.position+celestialObject.accel*k)*zoom + offset))
 
-            # Angles
-            # difference Vector angle
-            # screen.blit(mainFont.render(str(math.degrees(diffVector.angle())), False, (0, 0, 255)), [celestialObject.position[0]+30, celestialObject.position[1]+30])
-            # attraction force angle
-            # screen.blit(mainFont.render(str(math.degrees(attractionForceVector.angle())), False, (255, 0, 0)), [celestialObject.position[0]+30, celestialObject.position[1]+60])
-    
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
