@@ -23,7 +23,7 @@ universalGrav = 1.7 # 6.67 * 10**(-11)
 
 
 class CelestialObject:
-    def __init__(self, position : Vector, mass : float, startAccel : Vector, color : list = (0, 0, 0), radius : float = 0.0, isSun : bool = False):
+    def __init__(self, position : Vector, mass : float, v : Vector, startAccel : Vector, color : list = (0, 0, 0), radius : float = 0.0, isSun : bool = False):
         self.position = position
         self.mass = mass
         self.color = color
@@ -31,6 +31,7 @@ class CelestialObject:
             self.radius = radius
         else:
             self.radius = [50, 100][int(isSun)]/3 * math.sqrt(self.mass)
+        self.v = v
         self.accel: Vector = startAccel
         self.isSun = isSun
 
@@ -45,7 +46,7 @@ def getAttractionForce(G, m1, m2, d):
     return G*m1*m2 / d**2
 
 
-def getAttractionVector(f_g, m1Pos, m2Pos):
+def getAttractionVector(f_g, m1Pos, m2Pos) -> Vector:
     """
     Returns a Vector class object pointing in the direction of m2Pos with a magnitude of f_g
     """
@@ -54,14 +55,17 @@ def getAttractionVector(f_g, m1Pos, m2Pos):
     return Vector(f_g, 0).rotate(angle)
 
 
-celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+2000, screencenter[1]), 5, Vector(0, -50), (255, 0, 255))]
-#celestialObjects.append(CelestialObject(Vector(screencenter[0]-3000, screencenter[1]), 4, Vector(0, 50), (0, 255, 100)))
+celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+2000, screencenter[1]), 5, Vector(0, 0), Vector(0, -50), (255, 0, 255))]
+celestialObjects.append(CelestialObject(Vector(screencenter[0]-3000, screencenter[1]), 20, Vector(0, 0), Vector(0, 50), (0, 255, 100)))
+celestialObjects.append(CelestialObject(Vector(screencenter[0]-1500, screencenter[1]), 20, Vector(0, 0), Vector(10, -20), (0, 0, 100)))
 sunIndex = 0
-celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 100, Vector(0, 0), (255, 255, 255), isSun=True))
+celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 100, Vector(0, 0), Vector(0, 0), (255, 255, 255), isSun=True))
 
 playing = True
 paused = False
 objectsCrashed = False
+displayingAcceleration = True
+displayingVelocity = True
 
 while playing:
     pg.display.update()
@@ -84,9 +88,11 @@ while playing:
 
                 # Vector addition and scaling by SIMULATIONSPEED for variable simulation speeds
                 celestialObject1.accel += attractionForceVector*SIMULATIONSPEED
+
+                celestialObject1.v += celestialObject1.accel
                 
-                # Update positions by adding acceleration
-                celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.accel/celestialObject1.mass)*SIMULATIONSPEED
+                # Update positions by adding velocity
+                celestialObject1.position = Vector(celestialObject1.position) + (celestialObject1.v/celestialObject1.mass)*SIMULATIONSPEED
                 diffVector = celestialObject2.position - celestialObject1.position
 
                 pos1 = list(celestialObject1.position*zoom+offset)
@@ -94,7 +100,11 @@ while playing:
 
                 # Vectors
                 # Accel:
-                pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k)*zoom + offset))
+                if displayingAcceleration:
+                    pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject1.position+celestialObject1.accel*k)*zoom + offset))
+                # Velocity
+                if displayingVelocity:
+                    pg.draw.line(screen, (0, 20, 255), pos1, list((celestialObject1.position+celestialObject1.v*k)*zoom + offset))
                 # Attraction force
                 pg.draw.line(screen, (255, 0, 0), pos1, list((celestialObject1.position + attractionForceVector*k*10)*zoom + offset))
                 # difference Vector
@@ -112,13 +122,15 @@ while playing:
 
             # Vectors
             # Accel:
-            pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject.position+celestialObject.accel*k)*zoom + offset))
+            if displayingAcceleration:
+                pg.draw.line(screen, (0, 255, 100), pos1, list((celestialObject.position+celestialObject.accel*k)*zoom + offset))
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             playing = False
         if event.type == pg.KEYDOWN:
+            #manually moving the camera when not tracking
             if event.key == pg.K_UP:
                 offset[1] += scrollSpeed
             if event.key == pg.K_DOWN:
@@ -130,6 +142,12 @@ while playing:
             
             if event.key == pg.K_s: # Stop tracking current object
                 trackingIndex = None
+            
+            if event.key == pg.K_d:
+                if any(displayingAcceleration, displayingVelocity):
+                    displayingAcceleration, displayingVelocity = False
+                else:
+                    displayingAcceleration, displayingVelocity = True
             
             maxInd = len(celestialObjects)-1
             if event.key == pg.K_0:
@@ -144,6 +162,18 @@ while playing:
             if event.key == pg.K_3:
                 if 3 <= maxInd:
                     trackingIndex = 3
+            if event.key == pg.K_4:
+                if 4 <= maxInd:
+                    trackingIndex = 4
+            if event.key == pg.K_5:
+                if 5 <= maxInd:
+                    trackingIndex = 5
+            if event.key == pg.K_6:
+                if 6 <= maxInd:
+                    trackingIndex = 6
+            if event.key == pg.K_7:
+                if 7 <= maxInd:
+                    trackingIndex = 7
             
             if event.key == pg.K_SPACE:
                 paused = paused == False
