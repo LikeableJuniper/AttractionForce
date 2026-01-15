@@ -42,7 +42,7 @@ def getAttractionVector(f_g, m1Pos, m2Pos) -> Vector:
 
 celestialObjects : list[CelestialObject] = [CelestialObject(Vector(screencenter[0]+1000, screencenter[1]), 10, Vector(0, -1), (255, 0, 255))]
 celestialObjects.append(CelestialObject(Vector(screencenter[0]-2500, screencenter[1]), 20, Vector(0, 0.5), (0, 255, 100)))
-#celestialObjects.append(CelestialObject(Vector(screencenter[0]-1500, screencenter[1]), 20, Vector(0, 0), (0, 0, 100)))
+celestialObjects.append(CelestialObject(Vector(screencenter[0]-5000, screencenter[1]), 20, Vector(0, -0.4), (0, 0, 100)))
 sunIndex = 0
 celestialObjects.insert(sunIndex, CelestialObject(Vector(screencenter), 100, Vector(0, 0), (255, 255, 0), isSun=True))
 
@@ -56,8 +56,6 @@ while playing:
     screen.fill((50, 50, 50))
 
     if not isinstance(trackingIndex, type(None)):
-        print(celestialObjects[trackingIndex].position)
-        print(screencenter)
         offset = -1*(celestialObjects[trackingIndex].position)*zoom + screencenter
     
     if not paused:
@@ -137,10 +135,10 @@ while playing:
                 trackingIndex = None
             
             if event.key == pg.K_d:
-                if any(displayingAcceleration, displayingVelocity):
-                    displayingAcceleration, displayingVelocity = False
+                if any([displayingAcceleration, displayingVelocity]):
+                    displayingAcceleration = displayingVelocity = False
                 else:
-                    displayingAcceleration, displayingVelocity = True
+                    displayingAcceleration = displayingVelocity = True
             
             maxInd = len(celestialObjects)-1
             if event.key == pg.K_0:
